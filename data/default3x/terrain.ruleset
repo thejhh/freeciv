@@ -11,7 +11,7 @@
 ; than minor changes.
 
 [datafile]
-description="Default tile_type data for Freeciv"
+description="Default3x tile_type data for Freeciv"
 options="+Freeciv-2.4-ruleset"
 
 [options]

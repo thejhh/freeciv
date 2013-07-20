@@ -10,14 +10,14 @@
 ; than minor changes.
 
 [datafile]
-description="Default effects data for Freeciv"
+description="Default3x effects data for Freeciv"
 options="+Freeciv-2.4-ruleset"
 
 ; /* <-- avoid gettext warnings
 ; */ <-- avoid gettext warnings
 
 ; Cheating AI effects are in separate file
-*include "default/ai_effects.ruleset"
+*include "default3x/ai_effects.ruleset"
 
 [effect_unhappysize]
 name    = "City_Unhappy_Size"

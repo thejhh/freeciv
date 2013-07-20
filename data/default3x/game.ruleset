@@ -10,16 +10,16 @@
 ; than minor changes.
 
 [datafile]
-description="Default game rules for Freeciv"
+description="Default3x game rules for Freeciv"
 options="+Freeciv-2.4-ruleset"
 
 [about]
 ; Ruleset name
-name = _("Default ruleset")
+name = _("Default3x ruleset")
 
 ; Description of the ruleset
 description = _("\
-You are playing Freeciv with default ruleset for single player games.\
+You are playing Freeciv with default3x ruleset for single and multi player games.\
 ")
 
 [options]
@@ -258,7 +258,7 @@ colorlist =
 ; etc...
 
 [settings]
-; freeciv game settings for the default ruleset
+; freeciv game settings for the default3x ruleset
 ;
 ; set =
 ;     { "name", "value", "lock"
