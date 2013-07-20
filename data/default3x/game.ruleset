@@ -50,11 +50,11 @@ min_city_center_food    = 1
 min_city_center_shield  = 1
 min_city_center_trade   = 0
 
-; Square of initial city radius
-init_city_radius_sq     = 9 ; was 5
+; Square of initial city radius (maximum is 26)
+init_city_radius_sq     = 18 ; was 5
 
 ; Square of initially visible radius (true distance).
-init_vis_radius_sq	= 9 ; was 5
+init_vis_radius_sq	= 18 ; was 5
 
 ; The type of collateral contamination produced by a nuclear attack.
 ;   "Pollution" - Pollution (same as industrial/population-generated).
