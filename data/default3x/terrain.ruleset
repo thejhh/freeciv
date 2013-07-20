@@ -32,7 +32,7 @@ land_channel_requirement = 10
 
 ; Bodies of water up to this size are considered freshwater lakes, if there is
 ; also terrain type(s) with flag "FreshWater" in the ruleset.
-lake_max_size = 14
+lake_max_size = 42 ; was 14
 
 ; There is no resources in the middle of the oceans, only near coast
 ocean_resources = 0
@@ -966,7 +966,7 @@ reqs           =
 gui_type       = "Fortress"
 build_time     = 3
 defense_bonus  = 100
-border_sq      = 15 ; was 5
+border_sq      = 9 ; was 5
 native_to      = "Land"
 flags          = "NoAggressive", "NoStackDeath", "DiplomatDefense"
 helptext       = _("\
@@ -1010,7 +1010,7 @@ reqs           =
 gui_type       = "Fortress"
 build_time     = 3
 border_sq      = 0 ; was 0
-vision_main_sq = 15 ; was 5
+vision_main_sq = 9 ; was 5
 helptext       = _("\
 Buoys may be built in the ocean (by units on a sea-going vessel).\
 ")
