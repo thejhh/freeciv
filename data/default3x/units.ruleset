@@ -25,23 +25,28 @@ names = "Airbase"
 
 [veteran_system]
 ; What are the names of the levels?
-veteran_names = _("green"), _("veteran"), _("hardened"), _("elite")
+veteran_names = _("rookie"), _("green"), _("green3"), _("veteran"), _("veteran2"), _("veteran3"), _("hardened"), _("hardened2"), _("hardened3"), _("elite"), _("elite2"), _("elite3")
+; was _("green"), _("veteran"), _("hardened"), _("elite")
 
 ; The percentage chance of increasing level through combat
-veteran_raise_chance = 50, 33, 20, 0
+veteran_raise_chance = 100, 50, 50,  33, 33, 33,  20, 20, 20,  1, 1, 0
+; was 50, 33, 20, 0
 
 ; The percentage chance of a settler/engineer increasing level through
 ; performing useful work (per turn)
-veteran_work_raise_chance = 5, 3, 1, 0
+veteran_work_raise_chance = 5, 5, 5,  3, 3, 3,  1, 1, 1,  1, 1, 0
+; was 5, 3, 1, 0
 
 ; Power factors are as a percentage.
 ; +50% is represented by 150
-veteran_power_fact = 100, 150, 175, 200
+veteran_power_fact = 75, 100, 125,  150, 158, 167,  175, 183, 192,  200, 200, 200
+; was 100, 150, 175, 200
 
 ; The additional number of movement points granted for different veteran
 ; levels.  These are thirds of points, so to increase movement
 ; by a whole point 3 must be specified.
-veteran_move_bonus = 0, 0, 0, 0
+veteran_move_bonus = 0, 0, 0,  0, 0, 0,  0, 0, 0,  0, 0, 0
+; was 0, 0, 0, 0
 
 ; /* <-- avoid gettext warnings
 ;
