@@ -1253,6 +1253,7 @@ AC_CONFIG_FILES([Makefile
 	  data/isotrident/Makefile
 	  data/stdsounds/Makefile
 	  data/default/Makefile
+	  data/default3x/Makefile
           data/multiplayer/Makefile
 	  data/experimental/Makefile
 	  data/civ1/Makefile
