@@ -33,7 +33,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-subdir = data/default
+subdir = data/default3x
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/dependencies/m4/mkstemp.m4 \
@@ -104,7 +104,7 @@ am__uninstall_files_from_dir = { \
 am__installdirs = "$(DESTDIR)$(pkgdatadir)"
 DATA = $(pkgdata_DATA)
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
-pkgdatadir = $(datadir)/$(PACKAGE)/default
+pkgdatadir = $(datadir)/$(PACKAGE)/default3x
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
 AM_DEFAULT_VERBOSITY = @AM_DEFAULT_VERBOSITY@
@@ -422,9 +422,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu data/default/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu data/default3x/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu data/default/Makefile
+	  $(AUTOMAKE) --gnu data/default3x/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
