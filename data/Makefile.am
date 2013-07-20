@@ -34,6 +34,7 @@ SERVER_FILES = \
 	civ1.serv \
 	civ2.serv \
 	default.serv \
+	default3x.serv \
 	experimental.serv \
 	multiplayer.serv
 
@@ -69,6 +70,7 @@ EXTRA_DIST = \
 	civ1.serv	\
 	civ2.serv	\
 	default.serv	\
+	default3x.serv	\
 	experimental.serv \
 	multiplayer.serv
 
@@ -80,7 +82,7 @@ CLIENTDATADIRS =
 endif
 
 if SERVER
-SERVERDATADIRS = default civ1 civ2 experimental multiplayer scenarios nation
+SERVERDATADIRS = default default3x civ1 civ2 experimental multiplayer scenarios nation
 else
 SERVERDATADIRS = 
 endif
