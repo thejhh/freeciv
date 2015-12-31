@@ -49,6 +49,8 @@ static void mapgenerator2(void);
 static void mapgenerator3(void);
 static void mapgenerator4(void);
 static void adjust_terrain_param(void);
+static int count_tiles_over_hmap_level(int level);
+static int solve_hmap_level(int percent, int min_level, int max_level, int max_tiles);
 
 /* common variables for generator 2, 3 and 4 */
 struct gen234_state {
@@ -247,6 +249,25 @@ static struct tile *rand_map_pos_characteristic(wetness_c wc,
 }
 
 /**************************************************************************
+  Return TRUE if the surrounding terrain at the given map position is "flat". 
+  Meaning that the level of the terrain is close to surrounding terrains.  
+****************************************************************************/
+static bool terrain_is_flat(struct tile *ptile, int precision)
+{
+  int tiles = 0;
+  square_iterate(ptile, 1, tile1) {
+    if( hmap(tile1)/MAX(1, precision) == hmap(ptile)/MAX(1, precision) ) {
+      tiles++; 
+    }
+  } square_iterate_end;
+  if(tiles < 6) {
+    return FALSE;
+  } else {
+    return TRUE;
+  }
+}
+
+/**************************************************************************
   we don't want huge areas of grass/plains, 
   so we put in a hill here and there, where it gets too 'clean' 
 
@@ -416,20 +437,43 @@ static struct terrain *pick_terrain(enum mapgen_terrain_property target,
 **************************************************************************/
 static void make_relief(void)
 {
+  int land_tiles, mountain_tiles, higher_mountain_level, flatness_precision;
   /* Calculate the mountain level.  map.server.mountains specifies the
    * percentage of land that is turned into hills and mountains. */
-  hmap_mountain_level = (((hmap_max_level - hmap_shore_level)
-                          * (100 - map.server.steepness))
-                         / 100 + hmap_shore_level);
+  land_tiles = count_tiles_over_hmap_level(hmap_shore_level);
+  hmap_mountain_level = solve_hmap_level(map.server.steepness, hmap_shore_level, hmap_max_level, land_tiles );
+  mountain_tiles = count_tiles_over_hmap_level(hmap_mountain_level);
+  higher_mountain_level = solve_hmap_level(10, hmap_mountain_level, hmap_max_level, mountain_tiles );
+  flatness_precision = MAX(1, (higher_mountain_level - hmap_mountain_level) / 10);
 
   whole_map_iterate(ptile) {
-    if (not_placed(ptile) &&
-        ((hmap_mountain_level < hmap(ptile)
-          && (fc_rand(10) > 5
-              || !terrain_is_too_high(ptile, hmap_mountain_level,
-                                      hmap(ptile))))
-         || terrain_is_too_flat(ptile, hmap_mountain_level, hmap(ptile)))) {
-      if (tmap_is(ptile, TT_HOT)) {
+    // FIXME: Do we need to take `not_placed(ptile)` in account at count_tiles_over_hmap_level()?
+    // FIXME: Either implement `terrain_is_too_high()` and `terrain_is_too_flat()` when solving hmap_mountain_level or don't use at all.
+    if (
+      not_placed(ptile)
+      && (
+        (
+          hmap_mountain_level < hmap(ptile)
+          && (
+            higher_mountain_level < hmap(ptile)
+            || (!terrain_is_flat(ptile, flatness_precision))
+          )
+          && (
+            fc_rand(10) > 5
+            //|| !terrain_is_too_high(ptile, hmap_mountain_level, hmap(ptile))
+          )
+        )
+        //|| terrain_is_too_flat(ptile, hmap_mountain_level, hmap(ptile))
+      )
+    ) {
+
+      if(higher_mountain_level < hmap(ptile)) {
+        /* Prefer mountains to hills in higher levels. */
+        tile_set_terrain(ptile,
+                         pick_terrain(MG_MOUNTAINOUS, MG_UNUSED,
+                                      fc_rand(10) < 8 ? MG_GREEN : MG_UNUSED));
+
+      } else if (tmap_is(ptile, TT_HOT)) {
         /* Prefer hills to mountains in hot regions. */
         tile_set_terrain(ptile,
                          pick_terrain(MG_MOUNTAINOUS, fc_rand(10) < 4
@@ -1112,6 +1156,60 @@ static void make_rivers(void)
 }
 
 /**************************************************************************
+  Count the amount of tiles for specified shore level.
+**************************************************************************/
+static int count_tiles_over_hmap_level(int level)
+{
+  int tiles = 0;
+  whole_map_iterate(ptile) {
+    if (hmap(ptile) >= level) {
+		tiles++;
+    }
+  } whole_map_iterate_end;
+  return tiles;
+}
+
+/**************************************************************************
+  Search hmap_shore_level between min_level and max_level which has 
+  specified percent of tiles using binary search algorithm.
+**************************************************************************/
+static int solve_hmap_level(int percent, int min_level, int max_level, int max_tiles)
+{
+	int result, level, last_level;
+
+	result = -1;
+	last_level = -1;
+	level = min_level + (max_level - min_level)/2;
+
+	do {
+		result = count_tiles_over_hmap_level( level ) * 100 / max_tiles;
+
+	    log_debug("Found height level %d with %d%% of tiles (%d%% requested).", level, result, percent);
+
+		// If the level has less tiles than requested, then we need more tiles, so lets lower the level
+		if(result < percent) {
+			max_level = level;
+			last_level = level;
+			level = min_level + (max_level - min_level)/2;
+
+		// If the level has more tiles than requested, then we need less tiles, so lets rise the level
+		} else if(result > percent) {
+			min_level = level;
+			last_level = level;
+			level = min_level + (max_level - min_level)/2;
+		}
+	} while(!( (result == percent) || (last_level == level) || (min_level == max_level) ));
+	if(result != percent) {
+		log_normal(_("Using closest found height level with %d%% tiles (%d%% requested)."),
+			result, percent);
+	} else {
+		log_debug(_("Using height level with %d%% tiles (%d%% requested)."),
+			result, percent);
+	}
+	return level;
+}
+
+/**************************************************************************
   make land simply does it all based on a generated heightmap
   1) with map.server.landpercent it generates a ocean/unknown map
   2) it then calls the above functions to generate the different terrains
@@ -1143,7 +1241,7 @@ static void make_land(void)
                      "ruleset, or use a different map generator. If this "
                      "error persists, please report it at: %s", BUG_URL);
 
-  hmap_shore_level = (hmap_max_level * (100 - map.server.landpercent)) / 100;
+  hmap_shore_level = solve_hmap_level(map.server.landpercent, 0, hmap_max_level, MAP_INDEX_SIZE);
   ini_hmap_low_level();
   whole_map_iterate(ptile) {
     tile_set_terrain(ptile, T_UNKNOWN); /* set as oceans count is used */
